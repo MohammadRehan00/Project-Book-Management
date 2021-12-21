@@ -39,7 +39,7 @@ const createBook = async function (req, res) {
             return
         }
 
-        if (!validate.isValidObjectId(userId)) {
+        if (!validate.isValidObjectId(userId.trim())) {
             res.status(400).send({ status: false, message: `${userId} is not a valid user id` })
             return
         }
@@ -47,7 +47,12 @@ const createBook = async function (req, res) {
             res.status(400).send({ status: false, message: 'Book ISBN is required' })
             return
         }
-        const isISBNalreadyUsed = await bookModel.findOne({ ISBN }); // {ISBN: ISBN} object shorthand property
+        if(!validate.validateISBN(ISBN)){
+            res.status(400).send({ status: false, message: 'plz provide valid Book ISBN' })
+            return
+        }
+
+        const isISBNalreadyUsed = await bookModel.findOne({ ISBN : ISBN.trim() }); // {ISBN: ISBN} object shorthand property
 
         if (isISBNalreadyUsed) {
             res.status(400).send({ status: false, message: `${ISBN} ISBN  is already registered` })
@@ -78,7 +83,7 @@ const createBook = async function (req, res) {
         const bookData = {
             title: title.trim(),
             excerpt: excerpt.trim(),
-            userId: userId.trim(),
+            userId: userId,
             ISBN: ISBN.trim(),
             category: category.trim(),
             subcategory: subcategory.trim().split(',').map(subcat => subcat.trim()),

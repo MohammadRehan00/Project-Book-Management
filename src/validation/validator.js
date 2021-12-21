@@ -16,15 +16,31 @@ const isValidTitle = function (title) {
 
 const validateEmail = function (email) {
     var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    return re.test(email)
+    return re.test(email.trim())
 };
 const validatePassword = function (password) {
     var re = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,15}$/ ;
-    return re.test(password)
+    return re.test(password.trim())
 };
+const validateISBN = function (ISBN) {
+    var re = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/ ;
+    //var re = /^(?:ISBN(?:-13)?:?\ )?(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]$/ ;
+    return re.test(ISBN.trim())
+};
+
+
+const validatePhone = function (phone) {
+    var re =/^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[6789]\d{9}$/ ;
+    if(typeof(phone) == 'string'){
+    return re.test(phone.trim())
+    }else{
+        return re.test(phone)
+    }
+};
+
 const validateRating = function (rating) {
     var re = /^[0-5](\.[0-5][0-5]?)?$/ ;
-    return re.test(rating)
+    return re.test(rating.trim())
 };
 
 
@@ -33,4 +49,4 @@ const isValidObjectId = function (objectId) {
 }
 
 
-module.exports = { isValid, isValidRequestBody, validateEmail, isValidTitle, isValidObjectId,validatePassword ,validateRating}
+module.exports = { isValid, isValidRequestBody, validateEmail, isValidTitle, isValidObjectId,validatePassword,validatePhone,validateISBN,validateRating}
