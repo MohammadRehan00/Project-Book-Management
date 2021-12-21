@@ -15,7 +15,7 @@ const createBook = async function (req, res) {
         }
 
         // Extract params
-        const { title, excerpt, userId, ISBN, category, subcategory, reviews, releasedAt } = requestBody;
+        const { title, excerpt,bookCover, userId, ISBN, category, subcategory, reviews, releasedAt } = requestBody;
 
         // Validation starts
         if (!validate.isValid(title)) {
@@ -31,6 +31,11 @@ const createBook = async function (req, res) {
 
         if (!validate.isValid(excerpt)) {
             res.status(400).send({ status: false, message: 'Book excerpt is required' })
+            return
+        }
+
+        if (!validate.isValid(bookCover)) {
+            res.status(400).send({ status: false, message: "bookCover  is required" })
             return
         }
 
@@ -83,6 +88,7 @@ const createBook = async function (req, res) {
         const bookData = {
             title: title.trim(),
             excerpt: excerpt.trim(),
+            bookCover: bookCover.trim(),
             userId: userId,
             ISBN: ISBN.trim(),
             category: category.trim(),
