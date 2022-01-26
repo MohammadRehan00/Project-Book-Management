@@ -5,9 +5,8 @@ const bookSchema = new mongoose.Schema({
 
 
     title: { type: String, required: true, unique: true,trim:true },
-    bookCover:{type: String, trim: true},
     excerpt: { type: String, required: true ,trim:true },
-    userId: { type: ObjectId, required: true, ref: "user" },
+    userId: { type: ObjectId, required: true,trim:true, ref: "user" },
     ISBN: { type: String, required: true, unique: true,trim:true },
     category: { type: String, required: true,trim:true },
     subcategory: { type: Array, required: true },
@@ -18,7 +17,5 @@ const bookSchema = new mongoose.Schema({
     releasedAt: { type: Date, required: true, format: "YYYY-MM-DD" },
 }, { timestamps: true })
 
-//bookSchema.index({ 'comments.userid': 1 }),
 
     module.exports = mongoose.model('books', bookSchema)
-

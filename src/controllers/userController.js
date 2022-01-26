@@ -10,10 +10,6 @@ const createUser = async function (req, res) {
   try {
     const requestBody = req.body;
     const { title, name, phone, email, password, address } = requestBody
-
-
-    console.log(req.body)
-
     if (!validate.isValidRequestBody(requestBody)) {
       res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide author details' })
       return
@@ -46,23 +42,24 @@ const createUser = async function (req, res) {
       return;
     }
 
-
     const isPhoneNumberAlreadyUsed = await userModel.findOne({ phone: phone });
-
-
     if (isPhoneNumberAlreadyUsed) {
       res.status(400).send({ status: false, message: `${phone} mobile number is already registered`, });
       return;
     }
 
-
     if (!validate.isValid(email)) {
       res.status(400).send({ status: false, message: `Email is required` })
       return
     }
-
     if (!validate.validateEmail(email)) {
       res.status(400).send({ status: false, message: `Email should be a valid email address` })
+      return
+    }
+    const isEmailAlreadyUsed = await userModel.findOne({ email }); // {email: email} object shorthand property
+
+    if (isEmailAlreadyUsed) {
+      res.status(400).send({ status: false, message: `${email} email address is already registered` })
       return
     }
 
@@ -74,26 +71,38 @@ const createUser = async function (req, res) {
       res.status(400).send({ status: false, message: 'password should be between 8 and 15 characters' })
       return
     }
-
-    const isEmailAlreadyUsed = await userModel.findOne({ email }); // {email: email} object shorthand property
-
-    if (isEmailAlreadyUsed) {
-      res.status(400).send({ status: false, message: `${email} email address is already registered` })
-      return
+    
+    if(address){
+      if (!validate.isValidRequestBody(address)) {
+        res.status(400).send({ status: false, message: 'Please provide address details' })
+        return
+      }
+      if(address.street){ 
+        if(!(validate.validString(requestBody.address.street))){
+        return res.status(400).send({ status: false, message: `street of address is a string not number` })
+        }
+      }
+      if(address.city){ 
+        if(!(validate.validString(requestBody.address.city))){
+        return res.status(400).send({ status: false, message: `city of address is a string not number` })      
+      }
     }
 
-    const savedData = await userModel.create(req.body)
-    res.status(201).send({ status: true, msg: "successfully created", data: savedData })
-
-
+      if(address.pincode){ 
+        if(typeof requestBody.address.pincode != 'number')
+        return res.status(400).send({ status: false, message: `pincode of address should be number` })
+      }
+    
+      }
+    const createUserData = await userModel.create(req.body)
+    res.status(201).send({ status: true, msg: "successfully created", data: createUserData })
 
   } catch (err) {
-
     res.status(500).send({ status: false, msg: err.message })
-
   }
-
 }
+//---------------------------------------------------------------------------------------------------------------//
+
 const loginUser = async function (req, res) {
   try {
     const requestBody = req.body;
@@ -132,7 +141,6 @@ const loginUser = async function (req, res) {
       res.status(401).send({ status: false, message: `Invalid login credentials` });
       return
     }
-
     const token = await jwt.sign({
       userId: user._id,
       iat: Math.floor(Date.now() / 1000),
